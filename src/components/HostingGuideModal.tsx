@@ -99,15 +99,21 @@ export const HostingGuideModal: React.FC<HostingGuideModalProps> = ({ onClose })
           <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="font-bold text-sky-300 text-sm flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-sky-400" /> Opção 3: GitHub Pages
+                <CheckCircle2 className="w-4 h-4 text-sky-400" /> Opção 3: GitHub Pages (Sem Tela Branca)
               </span>
               <span className="text-[10px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full font-mono">
-                100% Integrado
+                Automático via Actions
               </span>
             </div>
-            <p className="text-slate-400 text-xs">
-              Vá nas configurações do seu repositório no GitHub &gt; <strong>Pages</strong> e selecione a branch com a compilação gerada. Gratuito para sempre sem nenhum limite prático para uso pessoal!
+            <p className="text-slate-300 text-xs leading-relaxed">
+              <strong>Por que deu tela em branco antes?</strong> O GitHub Pages por padrão tenta carregar os arquivos TypeScript brutos sem compilar (ou não encontra os assets no caminho do repositório).
             </p>
+            <div className="p-3 bg-black/40 rounded-xl border border-slate-700/60 space-y-1.5 text-xs text-slate-300">
+              <p className="font-semibold text-emerald-400">Como resolver no seu GitHub agora:</p>
+              <p>1. Vá no seu repositório no GitHub &gt; <strong>Settings</strong> &gt; <strong>Pages</strong>.</p>
+              <p>2. Em <strong>Source</strong>, mude de "Deploy from a branch" para <strong className="text-amber-300">"GitHub Actions"</strong>.</p>
+              <p>3. Pronto! O arquivo automático que criamos (<code className="text-cyan-300">.github/workflows/deploy.yml</code>) compila o Vite sozinho e publica em menos de 1 minuto!</p>
+            </div>
           </div>
         </div>
 
