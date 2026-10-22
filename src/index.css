@@ -1,12 +1,19 @@
 @import "tailwindcss";
 
 @layer base {
-  body {
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    min-height: -webkit-fill-available;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
     font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
-    overflow: hidden;
+    background-color: #060814;
   }
 
   h1, h2, h3, .font-display {
@@ -14,7 +21,7 @@
   }
 }
 
-/* Custom scrollbars and glow animations */
+/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

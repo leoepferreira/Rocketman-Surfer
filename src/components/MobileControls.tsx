@@ -19,19 +19,19 @@ export const MobileControls: React.FC<MobileControlsProps> = ({
   if (!visible) return null;
 
   return (
-    <div className="absolute bottom-4 inset-x-0 px-4 flex justify-between items-end pointer-events-none z-20 select-none pb-safe">
+    <div className="fixed bottom-2 inset-x-0 px-3 flex justify-between items-end pointer-events-none z-20 select-none pb-[env(safe-area-inset-bottom,6px)]">
       {/* Left / Right directional pad */}
-      <div className="flex gap-3 pointer-events-auto">
+      <div className="flex gap-2 pointer-events-auto">
         <button
           type="button"
           onPointerDown={(e) => {
             e.preventDefault();
             onLeft();
           }}
-          className="w-16 h-16 rounded-2xl bg-slate-900/80 active:bg-cyan-600/70 border-2 border-cyan-500/40 active:border-cyan-400 active:scale-95 flex items-center justify-center text-cyan-300 shadow-xl transition-transform touch-none"
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/85 active:bg-cyan-600/75 border-2 border-cyan-500/50 active:border-cyan-300 active:scale-95 flex items-center justify-center text-cyan-300 shadow-xl transition-transform touch-none"
           aria-label="Mover para esquerda"
         >
-          <ArrowLeft className="w-8 h-8" />
+          <ArrowLeft className="w-7 h-7 sm:w-8 sm:h-8" />
         </button>
 
         <button
@@ -40,26 +40,26 @@ export const MobileControls: React.FC<MobileControlsProps> = ({
             e.preventDefault();
             onRight();
           }}
-          className="w-16 h-16 rounded-2xl bg-slate-900/80 active:bg-cyan-600/70 border-2 border-cyan-500/40 active:border-cyan-400 active:scale-95 flex items-center justify-center text-cyan-300 shadow-xl transition-transform touch-none"
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/85 active:bg-cyan-600/75 border-2 border-cyan-500/50 active:border-cyan-300 active:scale-95 flex items-center justify-center text-cyan-300 shadow-xl transition-transform touch-none"
           aria-label="Mover para direita"
         >
-          <ArrowRight className="w-8 h-8" />
+          <ArrowRight className="w-7 h-7 sm:w-8 sm:h-8" />
         </button>
       </div>
 
       {/* Jump / Slide action pad */}
-      <div className="flex flex-col gap-2.5 pointer-events-auto">
+      <div className="flex flex-col gap-2 pointer-events-auto">
         <button
           type="button"
           onPointerDown={(e) => {
             e.preventDefault();
             onJump();
           }}
-          className="w-16 h-16 rounded-2xl bg-amber-950/70 active:bg-amber-500/80 border-2 border-amber-500/40 active:border-amber-300 active:scale-95 flex flex-col items-center justify-center text-amber-300 shadow-xl transition-transform touch-none"
+          className="w-14 h-13 sm:w-16 sm:h-15 rounded-2xl bg-amber-950/75 active:bg-amber-500/85 border-2 border-amber-500/50 active:border-amber-300 active:scale-95 flex flex-col items-center justify-center text-amber-300 shadow-xl transition-transform touch-none"
           aria-label="Pular com Jetpack"
         >
-          <ArrowUp className="w-6 h-6" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Pular</span>
+          <ArrowUp className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Pular</span>
         </button>
 
         <button
@@ -68,11 +68,11 @@ export const MobileControls: React.FC<MobileControlsProps> = ({
             e.preventDefault();
             onSlide();
           }}
-          className="w-16 h-16 rounded-2xl bg-indigo-950/70 active:bg-indigo-500/80 border-2 border-indigo-500/40 active:border-indigo-300 active:scale-95 flex flex-col items-center justify-center text-indigo-300 shadow-xl transition-transform touch-none"
+          className="w-14 h-13 sm:w-16 sm:h-15 rounded-2xl bg-indigo-950/75 active:bg-indigo-500/85 border-2 border-indigo-500/50 active:border-indigo-300 active:scale-95 flex flex-col items-center justify-center text-indigo-300 shadow-xl transition-transform touch-none"
           aria-label="Agachar ou Deslizar"
         >
-          <ArrowDown className="w-6 h-6" />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Agachar</span>
+          <ArrowDown className="w-5 h-5 sm:w-6 sm:h-6" />
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Agachar</span>
         </button>
       </div>
     </div>

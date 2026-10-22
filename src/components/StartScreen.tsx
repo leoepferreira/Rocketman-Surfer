@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Play, Menu, X, Compass, Trophy, Gamepad2, Server, Volume2, VolumeX } from 'lucide-react';
+import { Play, Menu, X, Compass, Trophy, Gamepad2, Server, Volume2, VolumeX, Smartphone, Download } from 'lucide-react';
 import { PlanetConfig } from '../types/game';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface StartScreenProps {
   currentPlanet: PlanetConfig;
@@ -10,6 +11,7 @@ interface StartScreenProps {
   onOpenLeaderboard: () => void;
   onOpenControlsGuide: () => void;
   onOpenHostingGuide: () => void;
+  onOpenPWAInstall: () => void;
   onToggleSound: () => void;
 }
 
@@ -21,15 +23,17 @@ export const StartScreen: React.FC<StartScreenProps> = ({
   onOpenLeaderboard,
   onOpenControlsGuide,
   onOpenHostingGuide,
+  onOpenPWAInstall,
   onToggleSound,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isInstallable, isInstalled } = usePWAInstall();
 
   return (
-    <div className="absolute inset-0 z-20 flex flex-col justify-between p-4 md:p-8 select-none pointer-events-auto">
-      {/* Top Header: Clean & Minimal with just the Menu Button */}
+    <div className="absolute inset-0 z-20 flex flex-col justify-between p-4 md:p-8 select-none pointer-events-auto h-full h-[100dvh]">
+      {/* Top Header: Clean & Minimal */}
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/60 border border-slate-700/50 backdrop-blur-md text-xs">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/70 border border-slate-700/60 backdrop-blur-md text-xs">
           <span
             className="w-2.5 h-2.5 rounded-full"
             style={{ backgroundColor: currentPlanet.accentColor }}
@@ -39,15 +43,28 @@ export const StartScreen: React.FC<StartScreenProps> = ({
           </span>
         </div>
 
-        {/* ☰ Hamburger Menu Button */}
-        <button
-          onClick={() => setMenuOpen(true)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 text-slate-200 hover:text-white transition shadow-lg backdrop-blur-md text-xs font-semibold"
-          aria-label="Abrir Menu de Opções"
-        >
-          <Menu className="w-4 h-4 text-cyan-400" />
-          <span>Menu</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Quick Install Pill if supported and not installed */}
+          {isInstallable && !isInstalled && (
+            <button
+              onClick={onOpenPWAInstall}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 transition text-[11px] font-bold"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Instalar App</span>
+            </button>
+          )}
+
+          {/* ☰ Hamburger Menu Button */}
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 text-slate-200 hover:text-white transition shadow-lg backdrop-blur-md text-xs font-semibold"
+            aria-label="Abrir Menu de Opções"
+          >
+            <Menu className="w-4 h-4 text-cyan-400" />
+            <span>Menu</span>
+          </button>
+        </div>
       </div>
 
       {/* Center: Super Clean Title & JOGAR Button */}
@@ -62,7 +79,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         {/* Big Start Button */}
         <button
           onClick={onStart}
-          className="group relative mt-8 px-10 py-5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-400 hover:to-red-400 text-white rounded-3xl font-display font-black text-2xl tracking-widest uppercase flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(245,158,11,0.6)] transition-all transform hover:scale-105 active:scale-95"
+          className="group relative mt-6 md:mt-8 px-10 py-5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-400 hover:to-red-400 text-white rounded-3xl font-display font-black text-2xl tracking-widest uppercase flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(245,158,11,0.6)] transition-all transform hover:scale-105 active:scale-95"
         >
           <Play className="w-7 h-7 fill-white group-hover:translate-x-0.5 transition-transform" />
           <span>JOGAR</span>
@@ -70,16 +87,16 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       </div>
 
       {/* Bottom Minimal Hint */}
-      <div className="text-center text-[11px] text-slate-400 font-mono">
+      <div className="text-center text-[11px] text-slate-400 font-mono pb-2">
         Pressione <span className="text-amber-400 font-bold">JOGAR</span> para iniciar a corrida no Sistema Solar
       </div>
 
       {/* Clean Drawer / Modal Menu */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-sm bg-[#0a0f1d] border-2 border-sky-500/40 rounded-3xl p-6 shadow-2xl text-white flex flex-col">
+          <div className="relative w-full max-w-sm bg-[#0a0f1d] border-2 border-sky-500/40 rounded-3xl p-6 shadow-2xl text-white flex flex-col max-h-[90vh]">
             {/* Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
               <span className="font-display font-bold text-base uppercase tracking-wider text-slate-200">
                 Menu do Jogo
               </span>
@@ -92,7 +109,29 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             </div>
 
             {/* Menu Options List */}
-            <div className="space-y-2.5">
+            <div className="space-y-2 overflow-y-auto pr-1">
+              {/* PWA Android Install Button */}
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  onOpenPWAInstall();
+                }}
+                className="w-full p-3 rounded-2xl bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/40 flex items-center gap-3 text-left transition"
+              >
+                <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+                    Instalar no Android (App)
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono">
+                      Tela Cheia
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-300">Remove a barra do navegador</div>
+                </div>
+              </button>
+
               <button
                 onClick={() => {
                   setMenuOpen(false);
@@ -146,9 +185,9 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                   setMenuOpen(false);
                   onOpenHostingGuide();
                 }}
-                className="w-full p-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/40 flex items-center gap-3 text-left transition"
+                className="w-full p-3 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/40 flex items-center gap-3 text-left transition"
               >
-                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400">
                   <Server className="w-5 h-5" />
                 </div>
                 <div>
@@ -177,7 +216,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
 
             <button
               onClick={() => setMenuOpen(false)}
-              className="mt-5 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold text-xs uppercase transition"
+              className="mt-4 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold text-xs uppercase transition"
             >
               Fechar Menu
             </button>

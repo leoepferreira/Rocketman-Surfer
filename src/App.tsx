@@ -12,6 +12,7 @@ import { PlanetSelectModal } from './components/PlanetSelectModal';
 import { ControlsGuideModal } from './components/ControlsGuideModal';
 import { HostingGuideModal } from './components/HostingGuideModal';
 import { PauseModal } from './components/PauseModal';
+import { PWAInstallModal } from './components/PWAInstallModal';
 
 export default function App() {
   const canvasMountRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,7 @@ export default function App() {
   const [showPlanetSelect, setShowPlanetSelect] = useState(false);
   const [showControlsGuide, setShowControlsGuide] = useState(false);
   const [showHostingGuide, setShowHostingGuide] = useState(false);
+  const [showPWAInstall, setShowPWAInstall] = useState(false);
 
   // Game over stats
   const [gameOverStats, setGameOverStats] = useState<{
@@ -222,7 +224,7 @@ export default function App() {
 
   return (
     <div
-      className="relative w-screen h-screen overflow-hidden bg-[#060814] select-none touch-none"
+      className="fixed inset-0 w-full h-full h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#060814] select-none touch-none"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -242,6 +244,7 @@ export default function App() {
           onOpenLeaderboard={() => setShowLeaderboard(true)}
           onOpenControlsGuide={() => setShowControlsGuide(true)}
           onOpenHostingGuide={() => setShowHostingGuide(true)}
+          onOpenPWAInstall={() => setShowPWAInstall(true)}
           onToggleSound={handleToggleSound}
         />
       )}
@@ -325,6 +328,11 @@ export default function App() {
       {/* Free Hosting Guide Modal */}
       {showHostingGuide && (
         <HostingGuideModal onClose={() => setShowHostingGuide(false)} />
+      )}
+
+      {/* PWA Android Install Modal */}
+      {showPWAInstall && (
+        <PWAInstallModal onClose={() => setShowPWAInstall(false)} />
       )}
     </div>
   );
