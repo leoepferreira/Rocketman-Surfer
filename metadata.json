@@ -1,0 +1,6 @@
+{
+  "name": "Rocketman Surfer",
+  "description": "Jogo de corrida espacial 3D estilo Subway Surfers pelos 8 planetas do Sistema Solar com jetpack, coleta de cristais, rankings e suporte a controle, teclado e touch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
