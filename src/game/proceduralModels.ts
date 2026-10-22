@@ -86,48 +86,9 @@ export function createRocketmanAstronaut(): AstronautActor {
     opacity: 0.9,
   });
 
-  // 1. Cosmic Surfboard (repulsor hoverboard under feet)
+  // 1. Hoverboard platform completely REMOVED as requested (astronaut runs directly on boots)
   const hoverboard = new THREE.Group();
-  hoverboard.position.y = 0.08;
-
-  const deckGeom = new THREE.BoxGeometry(0.85, 0.08, 1.6);
-  const deck = new THREE.Mesh(deckGeom, darkMetal);
-  deck.castShadow = true;
-  hoverboard.add(deck);
-
-  // Board nose points forward (-Z)
-  const noseGeom = new THREE.ConeGeometry(0.25, 0.45, 4);
-  const nose = new THREE.Mesh(noseGeom, suitAccent);
-  nose.rotation.x = -Math.PI / 2;
-  nose.position.z = -0.95;
-  nose.scale.set(1, 1, 0.3);
-  hoverboard.add(nose);
-
-  // Glowing neon rails along the board
-  const railGeom = new THREE.BoxGeometry(0.06, 0.08, 1.5);
-  const neonCyan = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
-  const railL = new THREE.Mesh(railGeom, neonCyan);
-  railL.position.x = -0.42;
-  hoverboard.add(railL);
-
-  const railR = new THREE.Mesh(railGeom, neonCyan);
-  railR.position.x = 0.42;
-  hoverboard.add(railR);
-
-  // Board repulsor glow under deck
-  const glowPlaneGeom = new THREE.PlaneGeometry(0.8, 1.4);
-  const boardGlowMat = new THREE.MeshBasicMaterial({
-    color: 0x38bdf8,
-    transparent: true,
-    opacity: 0.6,
-    side: THREE.DoubleSide,
-  });
-  const boardGlow = new THREE.Mesh(glowPlaneGeom, boardGlowMat);
-  boardGlow.rotation.x = -Math.PI / 2;
-  boardGlow.position.y = -0.06;
-  hoverboard.add(boardGlow);
-
-  characterRoot.add(hoverboard);
+  const boardGlow = new THREE.Mesh();
 
   // 2. Torso (Body suit)
   const torsoGeom = new THREE.BoxGeometry(0.65, 0.85, 0.45);
@@ -204,32 +165,97 @@ export function createRocketmanAstronaut(): AstronautActor {
 
   characterRoot.add(helmet);
 
-  // 5. Legs & Boots (surfer stance)
-  const legGeom = new THREE.CylinderGeometry(0.12, 0.14, 0.62, 8);
-  const bootGeom = new THREE.BoxGeometry(0.22, 0.18, 0.4);
+  // 5. High-Detail Sculpted Space Boots & Running Legs
+  const thighGeom = new THREE.CylinderGeometry(0.12, 0.13, 0.38, 10);
+  const kneeGeom = new THREE.BoxGeometry(0.19, 0.13, 0.13);
+  const calfGeom = new THREE.CylinderGeometry(0.13, 0.15, 0.40, 10);
+  const soleGeom = new THREE.BoxGeometry(0.24, 0.08, 0.48); // Tread sole in dark grip rubber
+  const bootFootGeom = new THREE.BoxGeometry(0.22, 0.17, 0.40); // Boot main body
+  const toeCapGeom = new THREE.CylinderGeometry(0.11, 0.11, 0.22, 10); // Rounded front toe cap
+  toeCapGeom.rotateZ(Math.PI / 2);
+  const heelLedGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.06, 8); // Cyan heel thruster LED
+  const cyanLedMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
 
-  // Left Leg (front-left foot)
+  // Left Leg & Boot
   const leftLeg = new THREE.Group();
-  leftLeg.position.set(-0.24, 0.72, 0);
-  const lMesh = new THREE.Mesh(legGeom, suitWhite);
-  lMesh.position.y = -0.3;
-  lMesh.castShadow = true;
-  leftLeg.add(lMesh);
-  const lBoot = new THREE.Mesh(bootGeom, darkMetal);
-  lBoot.position.set(0, -0.6, -0.05);
-  leftLeg.add(lBoot);
+  leftLeg.position.set(-0.24, 0.88, 0);
+
+  const lThigh = new THREE.Mesh(thighGeom, suitWhite);
+  lThigh.position.y = -0.19;
+  lThigh.castShadow = true;
+  leftLeg.add(lThigh);
+
+  const lKnee = new THREE.Mesh(kneeGeom, suitAccent);
+  lKnee.position.set(0, -0.38, -0.02);
+  leftLeg.add(lKnee);
+
+  const lCalf = new THREE.Mesh(calfGeom, suitWhite);
+  lCalf.position.y = -0.60;
+  lCalf.castShadow = true;
+  leftLeg.add(lCalf);
+
+  const lFoot = new THREE.Group();
+  lFoot.position.set(0, -0.80, 0);
+
+  const lBootFoot = new THREE.Mesh(bootFootGeom, darkMetal);
+  lBootFoot.position.set(0, 0, -0.06);
+  lBootFoot.castShadow = true;
+  lFoot.add(lBootFoot);
+
+  const lSole = new THREE.Mesh(soleGeom, darkMetal);
+  lSole.position.set(0, -0.08, -0.06);
+  lFoot.add(lSole);
+
+  const lToe = new THREE.Mesh(toeCapGeom, suitAccent);
+  lToe.position.set(0, -0.02, -0.25);
+  lFoot.add(lToe);
+
+  const lLed = new THREE.Mesh(heelLedGeom, cyanLedMat);
+  lLed.position.set(0, -0.02, 0.15);
+  lFoot.add(lLed);
+
+  leftLeg.add(lFoot);
   characterRoot.add(leftLeg);
 
-  // Right Leg (rear foot)
+  // Right Leg & Boot
   const rightLeg = new THREE.Group();
-  rightLeg.position.set(0.24, 0.72, 0);
-  const rMesh = new THREE.Mesh(legGeom, suitWhite);
-  rMesh.position.y = -0.3;
-  rMesh.castShadow = true;
-  rightLeg.add(rMesh);
-  const rBoot = new THREE.Mesh(bootGeom, darkMetal);
-  rBoot.position.set(0, -0.6, 0.1);
-  rightLeg.add(rBoot);
+  rightLeg.position.set(0.24, 0.88, 0);
+
+  const rThigh = new THREE.Mesh(thighGeom, suitWhite);
+  rThigh.position.y = -0.19;
+  rThigh.castShadow = true;
+  rightLeg.add(rThigh);
+
+  const rKnee = new THREE.Mesh(kneeGeom, suitAccent);
+  rKnee.position.set(0, -0.38, -0.02);
+  rightLeg.add(rKnee);
+
+  const rCalf = new THREE.Mesh(calfGeom, suitWhite);
+  rCalf.position.y = -0.60;
+  rCalf.castShadow = true;
+  rightLeg.add(rCalf);
+
+  const rFoot = new THREE.Group();
+  rFoot.position.set(0, -0.80, 0);
+
+  const rBootFoot = new THREE.Mesh(bootFootGeom, darkMetal);
+  rBootFoot.position.set(0, 0, -0.06);
+  rBootFoot.castShadow = true;
+  rFoot.add(rBootFoot);
+
+  const rSole = new THREE.Mesh(soleGeom, darkMetal);
+  rSole.position.set(0, -0.08, -0.06);
+  rFoot.add(rSole);
+
+  const rToe = new THREE.Mesh(toeCapGeom, suitAccent);
+  rToe.position.set(0, -0.02, -0.25);
+  rFoot.add(rToe);
+
+  const rLed = new THREE.Mesh(heelLedGeom, cyanLedMat);
+  rLed.position.set(0, -0.02, 0.15);
+  rFoot.add(rLed);
+
+  rightLeg.add(rFoot);
   characterRoot.add(rightLeg);
 
   // 6. Arms & Gloves
@@ -260,14 +286,15 @@ export function createRocketmanAstronaut(): AstronautActor {
 
   // Animation Update
   const updateAnimation = (time: number, isJumping: boolean, isSliding: boolean, speedMultiplier: number) => {
-    const cycle = time * 12 * Math.min(speedMultiplier, 2.2);
+    const cycle = time * 13 * Math.min(speedMultiplier, 2.2);
 
     if (isSliding) {
-      // Crouch / Slide pose: body compresses down onto board, leaning back
+      // Crouch / Slide pose: crouches down low, sliding smoothly on boots
       characterRoot.scale.y = 0.45;
-      characterRoot.position.y = -0.1;
-      torso.rotation.x = 0.35; // Lean back away from obstacle
-      hoverboard.rotation.x = 0.05;
+      characterRoot.position.y = -0.15;
+      torso.rotation.x = 0.4;
+      leftLeg.rotation.x = -0.7;
+      rightLeg.rotation.x = 0.4;
 
       // Intense thruster fire during slide
       const pulse = 2.0 + Math.sin(time * 35) * 0.4;
@@ -277,29 +304,27 @@ export function createRocketmanAstronaut(): AstronautActor {
       // Jump pose: soaring in the air with jetpack blast
       characterRoot.scale.y = 1.0;
       characterRoot.position.y = 0;
-      torso.rotation.x = -0.15; // Lean forward slightly into flight
-      hoverboard.rotation.x = -0.25;
+      torso.rotation.x = -0.15;
+      leftLeg.rotation.x = 0.35;
+      rightLeg.rotation.x = 0.35;
 
       // Huge jetpack flames
       const flameScale = 2.4 + Math.sin(time * 30) * 0.5;
       flameLeft.scale.set(1.6, flameScale, 1.6);
       flameRight.scale.set(1.6, flameScale, 1.6);
     } else {
-      // Normal Surfing pose
+      // Running pose: natural running gait on feet
       characterRoot.scale.y = 1.0;
-      characterRoot.position.y = 0;
-      torso.rotation.x = -0.05;
+      characterRoot.position.y = Math.abs(Math.sin(cycle * 2)) * 0.08;
+      torso.rotation.x = -0.06;
 
-      // Surfer rhythm sway
-      const sway = Math.sin(cycle * 0.4) * 0.06;
-      hoverboard.rotation.z = sway;
-      torso.rotation.z = -sway * 0.5;
+      // Legs swing forward and back
+      leftLeg.rotation.x = Math.sin(cycle) * 0.55;
+      rightLeg.rotation.x = -Math.sin(cycle) * 0.55;
 
-      // Running/surfing leg sway
-      leftLeg.rotation.x = Math.sin(cycle) * 0.35;
-      rightLeg.rotation.x = -Math.sin(cycle) * 0.35;
-      leftArm.rotation.x = -Math.sin(cycle) * 0.35;
-      rightArm.rotation.x = Math.sin(cycle) * 0.35;
+      // Arms swing in counter-motion
+      leftArm.rotation.x = -Math.sin(cycle) * 0.45;
+      rightArm.rotation.x = Math.sin(cycle) * 0.45;
 
       // Idle thruster flame flicker
       const f = 1.0 + Math.sin(time * 20) * 0.2;
@@ -360,34 +385,65 @@ export function createCrystalMesh(colorHex: string): THREE.Group {
 }
 
 /**
- * Procedural Space Mineral / Raw Ore Geode
+ * Procedural Space Mineral / Raw Ore Geode / Dark Meteor
+ * Cool, dark planetary body with high-contrast energy glow aura for unmistakable visibility
  */
-export function createMineralMesh(accentColorHex: string): THREE.Group {
+export function createMineralMesh(accentColorHex: string, rockColorHex?: string): THREE.Group {
   const group = new THREE.Group();
 
-  const rockGeom = new THREE.DodecahedronGeometry(0.4, 0);
+  // Cool & dark craggy meteor body with specular highlights and rim emissive
+  const rockGeom = new THREE.DodecahedronGeometry(0.44, 1);
+  const rockBaseColor = new THREE.Color(rockColorHex || '#334155');
   const rockMat = new THREE.MeshStandardMaterial({
-    color: 0x475569,
-    roughness: 0.85,
-    metalness: 0.3,
+    color: rockBaseColor,
+    roughness: 0.35, // Low roughness to produce crisp sun reflections on craggy faces
+    metalness: 0.60,
+    emissive: new THREE.Color(accentColorHex).multiplyScalar(0.22), // Subtle planetary rim glow to never blend with road
   });
   const rock = new THREE.Mesh(rockGeom, rockMat);
   rock.castShadow = true;
   group.add(rock);
 
-  const veinGeom = new THREE.BoxGeometry(0.2, 0.45, 0.2);
+  // Embedded luminous crystalline core
+  const veinGeom = new THREE.BoxGeometry(0.22, 0.48, 0.22);
   const veinMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(accentColorHex),
     emissive: new THREE.Color(accentColorHex),
-    emissiveIntensity: 0.8,
-    roughness: 0.2,
+    emissiveIntensity: 1.4,
+    roughness: 0.15,
   });
   const vein = new THREE.Mesh(veinGeom, veinMat);
   vein.rotation.set(0.4, 0.6, 0.2);
   group.add(vein);
 
+  // Secondary glowing mineral shards jutting out
+  const nodeGeom = new THREE.OctahedronGeometry(0.18, 0);
+  const node = new THREE.Mesh(nodeGeom, veinMat);
+  node.position.set(-0.24, 0.20, 0.22);
+  node.rotation.set(0.3, 0.8, -0.4);
+  group.add(node);
+
+  const node2Geom = new THREE.OctahedronGeometry(0.14, 0);
+  const node2 = new THREE.Mesh(node2Geom, veinMat);
+  node2.position.set(0.22, -0.18, -0.20);
+  node2.rotation.set(-0.5, 0.2, 0.7);
+  group.add(node2);
+
+  // Outer glowing halo aura (ensures meteor beacon is 100% visible from long range)
+  const spriteMat = new THREE.SpriteMaterial({
+    map: getEnergyGlowTexture(),
+    color: new THREE.Color(accentColorHex),
+    transparent: true,
+    opacity: 0.55,
+    blending: THREE.AdditiveBlending,
+  });
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.scale.set(1.25, 1.25, 1.25);
+  group.add(sprite);
+
   return group;
 }
+
 
 /**
  * Obstacle: HIGH BARRIER ARCH
@@ -397,28 +453,66 @@ export function createMineralMesh(accentColorHex: string): THREE.Group {
 export function createHighBarrierMesh(accentColor: string): THREE.Group {
   const group = new THREE.Group();
 
-  // Support posts on the sides
-  const postGeom = new THREE.CylinderGeometry(0.12, 0.15, 3.2, 8);
-  const postMat = new THREE.MeshStandardMaterial({
-    color: 0x334155,
-    metalness: 0.8,
-    roughness: 0.3,
+  // High-Tech Aerospace Titanium Alloy (eliminates pitch-black posts)
+  const titaniumMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0, // Sleek silver-white metallic alloy
+    metalness: 0.88,
+    roughness: 0.2,
   });
 
-  const postL = new THREE.Mesh(postGeom, postMat);
+  const neonStripeMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color(accentColor),
+    emissive: new THREE.Color(accentColor),
+    emissiveIntensity: 1.4,
+    roughness: 0.1,
+  });
+
+  const baseRingMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color(accentColor),
+    emissive: new THREE.Color(accentColor),
+    emissiveIntensity: 1.1,
+    metalness: 0.5,
+  });
+
+  // Support posts on the sides
+  const postGeom = new THREE.CylinderGeometry(0.12, 0.14, 3.2, 10);
+  const neonStripeGeom = new THREE.CylinderGeometry(0.04, 0.04, 3.1, 8);
+  const baseRingGeom = new THREE.CylinderGeometry(0.24, 0.26, 0.14, 12);
+
+  // Left Post + Glow Strip + Base Collar
+  const postL = new THREE.Mesh(postGeom, titaniumMat);
   postL.position.set(-1.15, 1.6, 0);
+  postL.castShadow = true;
   group.add(postL);
 
-  const postR = new THREE.Mesh(postGeom, postMat);
+  const stripeL = new THREE.Mesh(neonStripeGeom, neonStripeMat);
+  stripeL.position.set(-1.15, 1.6, 0.10);
+  group.add(stripeL);
+
+  const baseCollarL = new THREE.Mesh(baseRingGeom, baseRingMat);
+  baseCollarL.position.set(-1.15, 0.07, 0);
+  group.add(baseCollarL);
+
+  // Right Post + Glow Strip + Base Collar
+  const postR = new THREE.Mesh(postGeom, titaniumMat);
   postR.position.set(1.15, 1.6, 0);
+  postR.castShadow = true;
   group.add(postR);
 
+  const stripeR = new THREE.Mesh(neonStripeGeom, neonStripeMat);
+  stripeR.position.set(1.15, 1.6, 0.10);
+  group.add(stripeR);
+
+  const baseCollarR = new THREE.Mesh(baseRingGeom, baseRingMat);
+  baseCollarR.position.set(1.15, 0.07, 0);
+  group.add(baseCollarR);
+
   // High Arch Bar (bottom is at y = 1.45, player slides at y = 0.5)
-  const barGeom = new THREE.BoxGeometry(2.4, 0.8, 0.4);
+  const barGeom = new THREE.BoxGeometry(2.4, 0.75, 0.38);
   const barMat = new THREE.MeshStandardMaterial({
     color: 0xef4444, // Red danger
     emissive: 0x991b1b,
-    emissiveIntensity: 0.7,
+    emissiveIntensity: 0.75,
     roughness: 0.3,
   });
   const bar = new THREE.Mesh(barGeom, barMat);
@@ -444,28 +538,59 @@ export function createHighBarrierMesh(accentColor: string): THREE.Group {
 export function createLowBarrierMesh(accentColor: string): THREE.Group {
   const group = new THREE.Group();
 
-  // Low base pylons
-  const baseGeom = new THREE.BoxGeometry(0.35, 0.55, 0.4);
-  const baseMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    metalness: 0.8,
+  // High-Tech Titanium Pylon Housing (eliminates pitch-black base blocks)
+  const pylonMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0, // Sleek silver titanium
+    metalness: 0.88,
+    roughness: 0.18,
   });
 
-  const baseL = new THREE.Mesh(baseGeom, baseMat);
+  const pylonCoreMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color(accentColor),
+    emissive: new THREE.Color(accentColor),
+    emissiveIntensity: 1.3,
+    roughness: 0.1,
+  });
+
+  const baseGeom = new THREE.BoxGeometry(0.34, 0.55, 0.36);
+  const coreGeom = new THREE.BoxGeometry(0.14, 0.45, 0.38);
+  const footRingGeom = new THREE.BoxGeometry(0.42, 0.08, 0.44);
+
+  // Left Pylon Generator + Core + Glowing Foot
+  const baseL = new THREE.Mesh(baseGeom, pylonMat);
   baseL.position.set(-1.05, 0.28, 0);
+  baseL.castShadow = true;
   group.add(baseL);
 
-  const baseR = new THREE.Mesh(baseGeom, baseMat);
+  const coreL = new THREE.Mesh(coreGeom, pylonCoreMat);
+  coreL.position.set(-1.05, 0.28, 0);
+  group.add(coreL);
+
+  const footL = new THREE.Mesh(footRingGeom, pylonCoreMat);
+  footL.position.set(-1.05, 0.04, 0);
+  group.add(footL);
+
+  // Right Pylon Generator + Core + Glowing Foot
+  const baseR = new THREE.Mesh(baseGeom, pylonMat);
   baseR.position.set(1.05, 0.28, 0);
+  baseR.castShadow = true;
   group.add(baseR);
 
+  const coreR = new THREE.Mesh(coreGeom, pylonCoreMat);
+  coreR.position.set(1.05, 0.28, 0);
+  group.add(coreR);
+
+  const footR = new THREE.Mesh(footRingGeom, pylonCoreMat);
+  footR.position.set(1.05, 0.04, 0);
+  group.add(footR);
+
   // Low Plasma Beam (y = 0.45m)
-  const beamGeom = new THREE.CylinderGeometry(0.1, 0.1, 2.1, 8);
+  const beamGeom = new THREE.CylinderGeometry(0.11, 0.11, 2.1, 8);
   beamGeom.rotateZ(Math.PI / 2);
   const beamMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(accentColor),
     emissive: new THREE.Color(accentColor),
-    emissiveIntensity: 1.0,
+    emissiveIntensity: 1.25,
   });
   const beam = new THREE.Mesh(beamGeom, beamMat);
   beam.position.set(0, 0.45, 0);

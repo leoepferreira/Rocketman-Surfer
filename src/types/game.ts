@@ -12,6 +12,8 @@ export interface PlanetConfig {
   accentColor: string;
   crystalColor: string;
   trackColor: string;
+  gemPalettes: string[];
+  meteorPalettes: string[];
   gravityFactor: number;
   hazardTypes: string[];
   hasRings?: boolean;
