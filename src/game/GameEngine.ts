@@ -15,7 +15,15 @@ import {
 import { soundManager } from '../audio/SoundEffects';
 
 export interface GameEngineCallbacks {
-  onScoreUpdate: (score: number, distance: number, collectibles: number, speedMultiplier: number, speedKmh: number) => void;
+  onScoreUpdate: (
+    score: number,
+    distance: number,
+    planetCollectibles: number,
+    totalCollectibles: number,
+    speedMultiplier: number,
+    speedKmh: number,
+    ratePercent: number
+  ) => void;
   onPlanetChange: (planet: PlanetConfig, isWarp: boolean) => void;
   onGameOver: (finalStats: {
     score: number;
@@ -38,6 +46,7 @@ export class RocketmanGameEngine {
   private renderer: THREE.WebGLRenderer;
   private isSoftwareGl: boolean;
   private frameId: number = 0;
+  private isLoopRunning: boolean = false;
   private clock: THREE.Clock;
 
   // Environment
@@ -52,7 +61,8 @@ export class RocketmanGameEngine {
   public currentPlanet: PlanetConfig;
   public score: number = 0;
   public distanceMeters: number = 0;
-  public collectiblesCount: number = 0;
+  public planetCollectiblesCount: number = 0;
+  public totalCollectiblesCount: number = 0;
   public baseSpeed: number = 24; // Units per second
   public speedMultiplier: number = 1.0;
   public maxSpeedKmh: number = 86;
@@ -213,6 +223,7 @@ export class RocketmanGameEngine {
     this.initTrackChunks();
 
     window.addEventListener('resize', this.onWindowResize);
+    this.isLoopRunning = true;
     this.tick();
   }
 
@@ -412,8 +423,10 @@ export class RocketmanGameEngine {
     this.currentPlanet = SOLAR_PLANETS[this.currentPlanetIndex];
     this.score = 0;
     this.distanceMeters = 0;
-    this.collectiblesCount = 0;
+    this.planetCollectiblesCount = 0;
+    this.totalCollectiblesCount = 0;
     this.speedMultiplier = 1.0;
+    this.baseSpeed = 24;
     this.maxSpeedKmh = 86;
     this.playerLane = 0;
     this.targetPlayerX = 0;
@@ -431,6 +444,12 @@ export class RocketmanGameEngine {
     this.state = 'PLAYING';
     this.callbacks.onStateChange(this.state);
     soundManager.startMusic();
+
+    if (!this.isLoopRunning) {
+      this.isLoopRunning = true;
+      this.clock.start();
+      this.tick();
+    }
   }
 
   public pause() {
@@ -524,8 +543,9 @@ export class RocketmanGameEngine {
         if (this.warpTimer <= 0) this.isWarping = false;
       }
 
-      // Speed calculation: +0.1% per collectible item
-      this.speedMultiplier = 1.0 + this.collectiblesCount * 0.001;
+      // Scaled rate per planet: Mercúrio = 1.0%, Vênus = 1.5%, Terra = 2.0%, etc.
+      const currentRate = 0.01 + (this.currentPlanetIndex * 0.005);
+      this.speedMultiplier = 1.0 + (this.planetCollectiblesCount * currentRate);
       const currentSpeed = this.baseSpeed * this.speedMultiplier;
       const kmh = currentSpeed * 3.6;
       if (kmh > this.maxSpeedKmh) this.maxSpeedKmh = kmh;
@@ -601,7 +621,8 @@ export class RocketmanGameEngine {
           const dx = Math.abs(playerX - item.mesh.position.x);
           if (dx < 1.2) {
             item.collected = true;
-            this.collectiblesCount++;
+            this.planetCollectiblesCount++;
+            this.totalCollectiblesCount++;
             this.score += item.points;
 
             if (item.type === 'CRYSTAL') {
@@ -612,8 +633,11 @@ export class RocketmanGameEngine {
 
             this.triggerSparkle(item.mesh.position.x, item.mesh.position.y, 0, 16);
 
-            // 1,000 collectibles planetary jump!
-            if (this.collectiblesCount % 1000 === 0) {
+            // Reached 100 gems on this planet: WARP to next planet and reset speed!
+            // Game continues seamless run without calculating ranking here!
+            if (this.planetCollectiblesCount >= 100) {
+              this.planetCollectiblesCount = 0;
+              this.speedMultiplier = 1.0;
               this.triggerWarpToNextPlanet();
             }
 
@@ -672,7 +696,7 @@ export class RocketmanGameEngine {
                 soundManager.playCrash();
                 this.triggerSparkle(playerX, 1.0, 0, 35, true);
                 this.gameOver();
-                return;
+                break;
               }
             }
           }
@@ -709,12 +733,15 @@ export class RocketmanGameEngine {
       this.starfield.position.z = (this.distanceMeters * 0.15) % 80;
 
       // Telemetry update
+      const ratePercent = 1.0 + (this.currentPlanetIndex * 0.5);
       this.callbacks.onScoreUpdate(
         this.score,
         Math.floor(this.distanceMeters),
-        this.collectiblesCount,
+        this.planetCollectiblesCount,
+        this.totalCollectiblesCount,
         this.speedMultiplier,
-        Math.floor(kmh)
+        Math.floor(kmh),
+        ratePercent
       );
     }
 
@@ -727,10 +754,11 @@ export class RocketmanGameEngine {
     this.callbacks.onStateChange(this.state);
     soundManager.stopMusic();
 
+    // Final ranking and stats calculated ONLY on collision
     this.callbacks.onGameOver({
       score: this.score,
       distance: Math.floor(this.distanceMeters),
-      collectibles: this.collectiblesCount,
+      collectibles: this.totalCollectiblesCount,
       planetReached: this.currentPlanet.portugueseName,
       planetIndex: this.currentPlanetIndex,
       maxSpeedKmh: Math.floor(this.maxSpeedKmh),
@@ -738,6 +766,7 @@ export class RocketmanGameEngine {
   }
 
   public destroy() {
+    this.isLoopRunning = false;
     cancelAnimationFrame(this.frameId);
     window.removeEventListener('resize', this.onWindowResize);
     soundManager.stopMusic();

@@ -26,9 +26,11 @@ export default function App() {
   // Telemetry state
   const [score, setScore] = useState(0);
   const [distance, setDistance] = useState(0);
-  const [collectibles, setCollectibles] = useState(0);
+  const [planetCollectibles, setPlanetCollectibles] = useState(0);
+  const [totalCollectibles, setTotalCollectibles] = useState(0);
+  const [ratePercent, setRatePercent] = useState(1.0);
   const [speedMultiplier, setSpeedMultiplier] = useState(1.0);
-  const [speedKmh, setSpeedKmh] = useState(94);
+  const [speedKmh, setSpeedKmh] = useState(86);
   const [isWarping, setIsWarping] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
@@ -71,12 +73,14 @@ export default function App() {
     const engine = new RocketmanGameEngine(
       canvasMountRef.current,
       {
-        onScoreUpdate: (newScore, newDist, newCollectibles, newMult, newKmh) => {
+        onScoreUpdate: (newScore, newDist, newPlanetCol, newTotalCol, newMult, newKmh, newRate) => {
           setScore(newScore);
           setDistance(newDist);
-          setCollectibles(newCollectibles);
+          setPlanetCollectibles(newPlanetCol);
+          setTotalCollectibles(newTotalCol);
           setSpeedMultiplier(newMult);
           setSpeedKmh(newKmh);
+          setRatePercent(newRate);
         },
         onPlanetChange: (planet, isWarp) => {
           setCurrentPlanetIndex(planet.id - 1);
@@ -188,8 +192,8 @@ export default function App() {
     touchStartRef.current = null;
   };
 
-  // Start game
-  const handleStartGame = (planetIdx = currentPlanetIndex) => {
+  // Start game - always starts on Mercúrio (0)
+  const handleStartGame = (planetIdx = 0) => {
     if (!engineRef.current) return;
     setGameOverStats(null);
     setCurrentPlanetIndex(planetIdx);
@@ -206,9 +210,9 @@ export default function App() {
     }
   };
 
-  // Restart game
+  // Restart game - always restarts from Mercúrio (0)
   const handleRestart = () => {
-    handleStartGame(currentPlanetIndex);
+    handleStartGame(0);
   };
 
   // Select planet
@@ -254,9 +258,11 @@ export default function App() {
         <HUD
           score={score}
           distance={distance}
-          collectibles={collectibles}
+          planetCollectibles={planetCollectibles}
+          totalCollectibles={totalCollectibles}
           speedMultiplier={speedMultiplier}
           speedKmh={speedKmh}
+          ratePercent={ratePercent}
           currentPlanet={currentPlanet}
           isPaused={gameState === 'PAUSED'}
           isWarping={isWarping}
@@ -291,7 +297,7 @@ export default function App() {
       {gameState === 'PAUSED' && (
         <PauseModal
           score={score}
-          collectibles={collectibles}
+          collectibles={totalCollectibles}
           planetName={currentPlanet.portugueseName}
           speedKmh={speedKmh}
           soundEnabled={soundEnabled}

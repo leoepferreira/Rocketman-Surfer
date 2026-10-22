@@ -112,7 +112,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
 
           <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex flex-col">
             <span className="flex items-center gap-1.5 text-xs text-amber-400 font-medium">
-              <Gem className="w-3.5 h-3.5 text-cyan-400" /> Coletas (+0.1%)
+              <Gem className="w-3.5 h-3.5 text-cyan-400" /> Coletas (+1%)
             </span>
             <span className="font-display font-bold text-lg text-white mt-1">
               {stats.collectibles} <span className="text-xs text-slate-400">itens</span>

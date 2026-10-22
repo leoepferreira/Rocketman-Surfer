@@ -131,7 +131,7 @@ export const PlanetSelectModal: React.FC<PlanetSelectModalProps> = ({
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-400">
           <span>
-            💡 <strong className="text-white">Dica:</strong> A cada 1.000 coletas no modo infinito você salta automaticamente para o próximo planeta!
+            💡 <strong className="text-white">Dica:</strong> A cada 100 coletas no modo infinito você salta automaticamente para o próximo planeta!
           </span>
           <button
             onClick={onClose}

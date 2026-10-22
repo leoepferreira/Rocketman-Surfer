@@ -5,9 +5,11 @@ import { Pause, Play, Zap, Gem, Compass, Gauge, Volume2, VolumeX } from 'lucide-
 interface HUDProps {
   score: number;
   distance: number;
-  collectibles: number;
+  planetCollectibles: number;
+  totalCollectibles: number;
   speedMultiplier: number;
   speedKmh: number;
+  ratePercent: number;
   currentPlanet: PlanetConfig;
   isPaused: boolean;
   isWarping: boolean;
@@ -19,9 +21,11 @@ interface HUDProps {
 export const HUD: React.FC<HUDProps> = ({
   score,
   distance,
-  collectibles,
+  planetCollectibles,
+  totalCollectibles,
   speedMultiplier,
   speedKmh,
+  ratePercent,
   currentPlanet,
   isPaused,
   isWarping,
@@ -29,10 +33,9 @@ export const HUD: React.FC<HUDProps> = ({
   onTogglePause,
   onToggleSound,
 }) => {
-  // Progress towards next planet (every 1,000 items)
-  const currentChunk = collectibles % 1000;
-  const progressPercent = Math.min(100, (currentChunk / 1000) * 100);
-  const speedBonusPercent = ((speedMultiplier - 1.0) * 100).toFixed(1);
+  // Progress towards next planet (100 gems on current planet)
+  const progressPercent = Math.min(100, (planetCollectibles / 100) * 100);
+  const speedBonusPercent = ((speedMultiplier - 1.0) * 100).toFixed(0);
 
   return (
     <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 md:p-6 select-none overflow-hidden">
@@ -78,7 +81,7 @@ export const HUD: React.FC<HUDProps> = ({
           <div className="w-full mt-2">
             <div className="flex justify-between items-center text-[10px] font-mono text-slate-300 mb-1">
               <span className="flex items-center gap-1 text-emerald-400">
-                <Gem className="w-3 h-3 text-cyan-400" /> {currentChunk}/1.000 Coletas
+                <Gem className="w-3 h-3 text-cyan-400" /> {planetCollectibles}/100 Joias
               </span>
               <span className="text-yellow-400 font-semibold">
                 Próximo Planeta
@@ -104,7 +107,7 @@ export const HUD: React.FC<HUDProps> = ({
               {speedKmh} <span className="text-xs text-slate-400">km/h</span>
             </div>
             <div className="text-[10px] font-mono text-cyan-300">
-              +{speedBonusPercent}% (+0.1%/item)
+              +{speedBonusPercent}% (+{ratePercent.toFixed(1)}%/joia)
             </div>
           </div>
 
